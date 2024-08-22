@@ -1,6 +1,8 @@
+import 'package:calendar/view/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'controllers/calendar_controller.dart';
+import '../controllers/calendar_controller.dart';
+import 'package:calendar/controllers/bottom_navigation_bar_controller.dart';
 
 
 class CalendarPage extends GetView<CalendarController> {
@@ -41,12 +43,11 @@ class CalendarPage extends GetView<CalendarController> {
 
     for (int i = 1; i <= daysInMonth; i++) {
       days.add(
-        GestureDetector(
+        Obx (() => GestureDetector(
           onTap: () {
             calendarController.selectDate(DateTime(calendarController.selectedDate.value.year, calendarController.selectedDate.value.month, i));
           },
-          child: Obx(
-                () => Container(
+          child: Container(
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey),
                 color: calendarController.selectedDate.value.day == i ? Color.fromRGBO(220, 205, 152, 0.5) : Colors.white,
@@ -60,7 +61,7 @@ class CalendarPage extends GetView<CalendarController> {
               ),
             ),
           ),
-        ),
+        )
       );
     }
 
@@ -117,12 +118,21 @@ class CalendarPage extends GetView<CalendarController> {
                   border: Border.all(color: Colors.black, width: 2),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: GridView.count(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  crossAxisCount: 7,
-                  children: _buildCalendarDays(),
-                ),
+                child:
+               Obx(
+                   () =>  GridView.builder(
+                     shrinkWrap: true,
+                     physics: NeverScrollableScrollPhysics(),
+                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                       crossAxisCount: 7,
+                     ),
+                     itemCount: _buildCalendarDays().length,
+                     itemBuilder: (context, index) {
+                       return _buildCalendarDays()[index];
+                     },
+                   ),
+
+               )
               ),
             ),
             Padding(
@@ -238,6 +248,7 @@ class CalendarPage extends GetView<CalendarController> {
         },
         child: Icon(Icons.add),
       ),
+      bottomNavigationBar: const CalendarBottomNavigationBar(),
     );
   }
 }
